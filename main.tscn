@@ -1,0 +1,66 @@
+[gd_scene load_steps=7 format=3 uid="uid://cus4ckner4edd"]
+
+[ext_resource type="Script" uid="uid://bnd1s4l1f64p5" path="res://main.gd" id="1_ig7tw"]
+[ext_resource type="PackedScene" uid="uid://cywxyai2wfpja" path="res://player.tscn" id="2_0xm2m"]
+[ext_resource type="PackedScene" uid="uid://1kviopd0igqi" path="res://enemy.tscn" id="3_h2yge"]
+[ext_resource type="Script" uid="uid://cgdxm0o1p3x7p" path="res://spawn_manager.gd" id="4_1bvp3"]
+[ext_resource type="Script" uid="uid://byvfvl4q6hipq" path="res://hud.gd" id="5_lquwl"]
+
+[sub_resource type="ImageTexture" id="ImageTexture_1bvp3"]
+
+[node name="Main" type="Node" node_paths=PackedStringArray("start_player")]
+script = ExtResource("1_ig7tw")
+start_player = NodePath("Player")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(300.804, 89.8304)
+
+[node name="TextureRect" type="TextureRect" parent="."]
+visible = false
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 65.0
+offset_bottom = 65.0
+scale = Vector2(16.5968, 9.71429)
+texture = SubResource("ImageTexture_1bvp3")
+
+[node name="Player" parent="." instance=ExtResource("2_0xm2m")]
+position = Vector2(471, 268)
+
+[node name="Camera" type="Camera2D" parent="Player"]
+zoom = Vector2(1.5, 1.5)
+
+[node name="SpawnManager" type="Node2D" parent="." node_paths=PackedStringArray("spawn_timer")]
+script = ExtResource("4_1bvp3")
+enemy_scene = ExtResource("3_h2yge")
+spawn_timer = NodePath("SpawnTimer")
+spawn_area = Rect2(0, 0, 720, 480)
+
+[node name="SpawnTimer" type="Timer" parent="SpawnManager"]
+autostart = true
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="HUD" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("5_lquwl")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/HUD"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/HUD/MarginContainer"]
+layout_mode = 2
+
+[node name="HealthLabel" type="Label" parent="UI/HUD/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "HP: x/100"
+
+[connection signal="timeout" from="SpawnManager/SpawnTimer" to="SpawnManager" method="_on_spawn_timer_timeout"]

@@ -1,0 +1,77 @@
+[gd_scene load_steps=9 format=3 uid="uid://ssylnwyi7p5v"]
+
+[ext_resource type="Script" uid="uid://dp454kjpqviqu" path="res://character.gd" id="1_glpr6"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_glpr6"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"move",
+"speed": 5.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_wa5vi"]
+radius = 7.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_glpr6"]
+size = Vector2(36, 29)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_pjt0s"]
+radius = 27.074
+
+[sub_resource type="Animation" id="Animation_pjt0s"]
+
+[sub_resource type="Animation" id="Animation_glpr6"]
+resource_name = "attack"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_pjt0s"]
+_data = {
+&"RESET": SubResource("Animation_pjt0s"),
+&"attack": SubResource("Animation_glpr6")
+}
+
+[node name="Character" type="CharacterBody2D"]
+script = ExtResource("1_glpr6")
+
+[node name="SpritePivot" type="Marker2D" parent="."]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="SpritePivot"]
+sprite_frames = SubResource("SpriteFrames_glpr6")
+animation = &"attack"
+
+[node name="Hurtbox" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_wa5vi")
+
+[node name="HitboxPivot" type="Marker2D" parent="."]
+
+[node name="Hitbox" type="Area2D" parent="HitboxPivot"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxPivot/Hitbox"]
+modulate = Color(0.775426, 0, 0.160895, 1)
+position = Vector2(21, 0)
+shape = SubResource("RectangleShape2D_glpr6")
+debug_color = Color(0.976471, 0, 0.152941, 0.298039)
+
+[node name="PossessionRadius" type="Area2D" parent="."]
+visible = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PossessionRadius"]
+shape = SubResource("CircleShape2D_pjt0s")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_pjt0s")
+}
+
+[connection signal="body_entered" from="HitboxPivot/Hitbox" to="." method="_on_hitbox_body_entered"]
+[connection signal="body_exited" from="HitboxPivot/Hitbox" to="." method="_on_hitbox_body_exited"]
