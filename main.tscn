@@ -31,6 +31,8 @@ position = Vector2(471, 268)
 
 [node name="Camera" type="Camera2D" parent="Player"]
 zoom = Vector2(1.5, 1.5)
+position_smoothing_enabled = true
+position_smoothing_speed = 7.0
 
 [node name="SpawnManager" type="Node2D" parent="." node_paths=PackedStringArray("spawn_timer")]
 script = ExtResource("4_1bvp3")

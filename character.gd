@@ -9,21 +9,21 @@ class_name Character
 @onready var hitbox: Area2D = $HitboxPivot/Hitbox
 @onready var hitbox_pivot: Marker2D = $HitboxPivot
 
-@export var is_possesable: bool
+@export var is_possesable: bool = true
 @export var speed := 150
 @export var is_player: bool = false
 
-var current_health: int
+#var current_health: int = $HealthComponent.current_health
 var direction := Vector2.ZERO
 var is_attacking := false
 var possessable_targets: Array[Character] = []
+@onready var health_component: Node = $HealthComponent
 
 func _ready() -> void:
 	if is_player:
-		current_health = Global.player_max_health
-		print("Player health start: " + str(current_health))
-	else:
-		current_health = Global.enemy_max_health
+		GameManager.current_player = self
+	
+	
 
 
 func _physics_process(delta: float) -> void:
@@ -43,7 +43,7 @@ func _physics_process(delta: float) -> void:
 			
 	#Enemy movement
 	else:
-		var player = Global.current_player if Global else null
+		var player = GameManager.current_player
 	
 		if player:
 			direction = (player.global_position - self.global_position).normalized()
@@ -72,10 +72,11 @@ func _physics_process(delta: float) -> void:
 
 
 func _on_hitbox_body_entered(body: Node2D) -> void:
-	if body is Character and not body.is_player and body.is_possessable and is_player:
-		if body not in possessable_targets:
-			possessable_targets.append(body)
-			#print("[HITBOX] Added", body.name, "to possessable targets:", possessable_targets)
+	if body is Character and not body.is_player:
+		if body.is_possesable and is_player:
+			if body not in possessable_targets:
+				possessable_targets.append(body)
+				#print("[HITBOX] Added", body.name, "to possessable targets:", possessable_targets)
 	elif body is Character and body.is_player:
 		attack()
 
@@ -90,7 +91,7 @@ func attack():
 	#target.take_damage()
 	
 	for target in hitbox.get_overlapping_bodies():
-		if target is Character and not target.is_player:
+		if target is Character:
 			target.take_damage(10)
 		
 	if is_attacking:
@@ -103,16 +104,17 @@ func attack():
 	
 
 func take_damage(amount: int):
-	print("taking damage")
-	current_health -= amount
-	print(current_health)
+	#print("taking damage")
 	if is_player:
-		Global.current_player_health = current_health 
-		print("global health: " + str(Global.current_player_health))
-	if current_health <= 0:
-		#die()
-		pass
+		GameManager.take_damage(amount)
+		#print("global health: " + str(Global.current_player_health))
+	else:
+		$HealthComponent.take_damage(amount)
+		
+		
 
-func die():
-	queue_free()
 	
+
+
+func _on_health_component_died() -> void:
+	queue_free()

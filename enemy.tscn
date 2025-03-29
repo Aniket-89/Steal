@@ -231,7 +231,6 @@ _data = {
 
 [node name="Enemy" groups=["Enemy"] instance=ExtResource("1_4gyqm")]
 script = ExtResource("2_iifgy")
-is_possesable = true
 speed = 100
 
 [node name="AnimatedSprite2D" parent="SpritePivot" index="0"]
